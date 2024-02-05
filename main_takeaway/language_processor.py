@@ -1,5 +1,11 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
+import nltk
+import re
+import html
+from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.probability import FreqDist
 
 
 def extract_web(url: str) -> str:
@@ -21,3 +27,54 @@ def extract_web(url: str) -> str:
     text = ' '.join(chunk for chunk in chunks if chunk)
 
     return text
+
+
+def get_takeaway_output(url: str) -> str:
+    output: str = ""
+
+    # Get tokenized article without non-alphabet words
+    article: str = extract_web(url)
+    articleAlphabet: str = re.sub("[^a-zA-Z]", " ", article)
+    articleWordTokens: list[str] = word_tokenize(articleAlphabet, language='english', preserve_line=True)
+    articleSentences: list[str] = sent_tokenize(article)
+
+    # Remove stop words
+    filteredWords: list = []
+    stopWords = set(stopwords.words('english'))
+    for word in articleWordTokens:
+        if word.lower() not in stopWords:
+            filteredWords.append(word)
+
+    # Find frequency count
+    articleFrequencies = FreqDist()
+    for word in filteredWords:
+        articleFrequencies[word.lower()] += 1
+
+    # Format output
+    word_freq_output: str = "10 Most Common Words:\n"
+    for common_word in articleFrequencies.most_common(10):
+        extra_tab: str = "\t\t" if len(common_word[0]) < 7 else "\t"
+        word_freq_output += common_word[0] + ":" + extra_tab + str(common_word[1]) + "\n"
+
+    # Output
+    output += word_freq_output
+
+    output += " \nSample Sentences:\n"
+    # Search each tokenized sentence for each common word
+    for common_word in articleFrequencies.most_common(10):
+        for sentence in articleSentences:
+            sample_found: bool = False
+
+            # Search through tokenized sentence
+            sentence_tokens: list[str] = word_tokenize(sentence.lower())
+            for word in sentence_tokens:
+                if common_word[0] == word:
+                    extra_tab: str = "\t\t" if len(common_word[0]) < 7 else "\t"
+                    output += common_word[0] + ":" + extra_tab + sentence + "\n \n "
+                    sample_found = True
+                    break
+
+            if sample_found:
+                break  # On to the next common word
+
+    return output
