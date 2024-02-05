@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+ 
+{% block content %}
+
+    <h1 class="text-lg font-bold mb-3">Main Takeaway</h1>
+    <div class="flex flex-row gap-4 mb-2">
+        <label for="input-url" class="text-md w-24">URL:</label>
+        <input type="text" id="input-url" placeholder="e.g. https://www.google.com/" class="input input-bordered w-72 border" />
+    </div>
+    <h2 class="text-lg mt-5 mb-3">Output:</h2>
+    <p id="p-output">test</p>
+{% endblock content %}
