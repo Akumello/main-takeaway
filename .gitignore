@@ -9,6 +9,9 @@ media
 # Node #
 node_modules
 
+# Tailwind #
+static/CACHE
+
 # Backup files #
 *.bak
 
