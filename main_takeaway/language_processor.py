@@ -34,25 +34,25 @@ def get_takeaway_output(url: str) -> str:
 
     # Get tokenized article without non-alphabet words
     article: str = extract_web(url)
-    articleAlphabet: str = re.sub("[^a-zA-Z]", " ", article)
-    articleWordTokens: list[str] = word_tokenize(articleAlphabet, language='english', preserve_line=True)
-    articleSentences: list[str] = sent_tokenize(article)
+    article_alphabet: str = re.sub("[^a-zA-Z]", " ", article)
+    article_word_tokens: list[str] = word_tokenize(article_alphabet, language='english', preserve_line=True)
+    article_sentences: list[str] = sent_tokenize(article)
 
     # Remove stop words
-    filteredWords: list = []
-    stopWords = set(stopwords.words('english'))
-    for word in articleWordTokens:
-        if word.lower() not in stopWords:
-            filteredWords.append(word)
+    filtered_words: list = []
+    stop_words = set(stopwords.words('english'))
+    for word in article_word_tokens:
+        if word.lower() not in stop_words:
+            filtered_words.append(word)
 
     # Find frequency count
-    articleFrequencies = FreqDist()
-    for word in filteredWords:
-        articleFrequencies[word.lower()] += 1
+    article_frequencies = FreqDist()
+    for word in filtered_words:
+        article_frequencies[word.lower()] += 1
 
     # Format output
     word_freq_output: str = "10 Most Common Words:\n"
-    for common_word in articleFrequencies.most_common(10):
+    for common_word in article_frequencies.most_common(10):
         extra_tab: str = "\t\t" if len(common_word[0]) < 7 else "\t"
         word_freq_output += common_word[0] + ":" + extra_tab + str(common_word[1]) + "\n"
 
@@ -61,8 +61,8 @@ def get_takeaway_output(url: str) -> str:
 
     output += " \nSample Sentences:\n"
     # Search each tokenized sentence for each common word
-    for common_word in articleFrequencies.most_common(10):
-        for sentence in articleSentences:
+    for common_word in article_frequencies.most_common(10):
+        for sentence in article_sentences:
             sample_found: bool = False
 
             # Search through tokenized sentence
